@@ -8,7 +8,7 @@ pygame.init()
 width = 800
 height = 600
 window = pygame.display.set_mode((width, height))
-pygame.display.set_caption('Pong - Single Player')
+pygame.display.set_caption('Pong - Single Player with Smooth AI')
 clock = pygame.time.Clock()
 
 # Colors
@@ -22,7 +22,8 @@ ball = pygame.Rect(width // 2 - 10, height // 2 - 10, 20, 20)
 ball_speed = 7
 ball_dx = ball_speed  # Horizontal speed
 ball_dy = random.randint(-ball_speed, ball_speed)  # Initial vertical speed
-paddle_speed = 5
+paddle_speed = 5  # Player paddle speed
+ai_max_speed = 6  # Max speed for AI paddle
 
 # Scores
 player_score = 0
@@ -62,11 +63,11 @@ while not game_over:
     if player_paddle.bottom > height:
         player_paddle.bottom = height
 
-    # AI paddle movement (follows ball)
-    if ball.centery < ai_paddle.centery:
-        ai_dy = -paddle_speed
-    else:
-        ai_dy = paddle_speed
+    # Smooth AI paddle movement
+    ai_target_y = ball.centery  # Where the AI wants to go
+    ai_distance = ai_target_y - ai_paddle.centery  # Distance to target
+    ai_dy = ai_distance * 0.15  # Move 15% of the distance each frame
+    ai_dy = max(min(ai_dy, ai_max_speed), -ai_max_speed)  # Cap the speed
     ai_paddle.top += ai_dy
     if ai_paddle.top < 0:
         ai_paddle.top = 0
